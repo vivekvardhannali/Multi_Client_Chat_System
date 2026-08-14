@@ -1,0 +1,95 @@
+1)
+ loadtesting:Took 10 clients and each sending 10 messages per sec for 1 minute and then i calculated server metrics for that and then plotted them using plot_load_test.py
+ stresstesting:wrote a run_stress_test.sh script with increasing no of clients {5,10,20,30,40,50}and applied metric evaluation and got the data into respective summary files and then sent that to plot_test.py to plot.
+2)
+graphs for load testing and stress testing are kept in load_test_results and stress_test_results respectively..
+  Load Test (10 Clients)
+Observations from Graphs:
+
+Latency:
+    Fork ≈ 79,000 µs
+    Thread ≈ 75,000 µs
+    Select ≈ 50,000 µs (lowest)
+
+CPU Usage:
+    Thread-based highest
+    Select moderate
+    Fork lowest
+
+Memory Usage (PSS & VmRSS):
+    Thread-based highest
+    Fork moderate
+    Select lowest
+
+->Stress Test (5 → 50 Clients)
+CPU vs Clients:
+    Thread CPU usage increases significantly with clients
+    Fork CPU grows moderately
+    Select remains relatively stable
+
+Latency vs Clients:
+    Select consistently shows lower latency
+    Fork and Thread fluctuate
+
+Memory vs Clients:
+    Thread-based memory increases almost linearly
+    Fork memory relatively stable (parent process measured)
+    Select minimal memory growth
+
+3)Analysis and Observations
+    1.Latency
+        Select-based server consistently shows lower average latency:
+            Single-threaded event-driven design
+            No context switching between processes
+            No heavy locking
+        Fork-based latency is higher due to:
+            Process creation overhead
+            Context switching
+            IPC overhead
+        Thread-based latency is moderate but increases with load due to:
+            Lock contention
+            Thread scheduling overhead
+
+    2. CPU Usage
+        Thread-based server shows highest CPU usage because:
+            Multiple threads active simultaneously
+            Synchronization overhead
+            Increased scheduling cost
+        Fork-based server shows lower CPU because:
+            Parent mostly handles routing
+            Child processes operate independently
+        Select-based server is efficient due to:
+            Single execution context
+            No thread/process switching
+
+    3.Thread-based server consumes the most memory because:
+        Each thread allocates stack space
+        Shared address space still increases PSS
+    Fork-based memory appears moderate because:
+        Only parent process memory was measured
+        Child processes memory not fully included in VmRSS calculation
+    Select-based server uses the least memory because:
+        Single process
+        No additional stacks
+        Minimal duplication
+
+4)
+Fork-based server:
+    High process creation overhead
+    Context switching between processes
+    IPC communication cost
+
+Thread-based server:
+    Mutex lock contention
+    Thread scheduling overhead
+    Memory growth due to thread stacks
+
+Select-based server:
+    Single-threaded architecture
+    If client count becomes very high, select() scalability may degrade
+    File descriptor scanning overhead
+
+5)
+Thread based has higher memory bottleneck.There exists a scaling issue when we use this.
+Fork based server has high process creation overhead.(not efficient for more number of clients due to this overhead)
+Select has linear descriptor scanning which is not suitable for thousands of clients.(we can use epoll for high scale)

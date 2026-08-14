@@ -1,0 +1,9 @@
+->Through this assignment, I gained practical understanding of concurrency models by implementing fork based, thread based, and select based servers. I understood how context switching, synchronization, and event driven I/O affect performance and scalability.
+
+->I improved my knowledge of TCP socket programming, message framing, and designing a consistent communication protocol. Adding timestamp based latency measurement helped me understand end to end delay calculation in real systems.
+
+->Implementing CPU and memory monitoring using /proc files gave me insight into how operating systems expose process level statistics and how to interpret metrics like VmRSS and PSS.
+
+->One major challenge was debugging issues related to timestamp parsing, synchronization in threaded servers, and ensuring proper cleanup during stress testing. Managing multiple processes and threads during benchmarking also required careful handling.
+
+->Overall, this assignment strengthened my understanding of networking, operating systems concepts, and performance analysis in real world systems.
